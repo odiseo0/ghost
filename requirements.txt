@@ -1,0 +1,8 @@
+fastapi==0.95.1
+uvicorn[standard]==0.22.0
+langchain==0.0.154
+openai==0.27.5
+aiofiles==23.1.0
+pypdf==3.8.1
+faiss-cpu==1.7.4
+git+https://github.com/odiseo0/aioaws.git@shogun-master
