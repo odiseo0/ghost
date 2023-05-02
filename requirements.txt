@@ -5,4 +5,6 @@ openai==0.27.5
 aiofiles==23.1.0
 pypdf==3.8.1
 faiss-cpu==1.7.4
+Jinja2==3.1.2
+orjson==3.8.11
 git+https://github.com/odiseo0/aioaws.git@shogun-master
