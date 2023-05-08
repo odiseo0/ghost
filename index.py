@@ -1,43 +1,24 @@
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import ORJSONResponse
-from fastapi.templating import Jinja2Templates
+from pathlib import Path
 
-from src.core.chains.chat import chat_chain
-from src.api.chats.domain import ChatResponse
+from litestar import Litestar, get
+from litestar.config.cors import CORSConfig
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.response_containers import Template
+from litestar.template.config import TemplateConfig
 
-
-app = FastAPI(default_response_class=ORJSONResponse)
-templates = Jinja2Templates(directory="html")
-
-
-@app.get("/")
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+from src.api.chats import general_chat
 
 
-@app.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
+@get("/")
+def index() -> Template:
+    return Template(name="index.html")
 
-    while True:
-        try:
-            question = await websocket.receive_text()
-            q_resp = ChatResponse(sender="you", message=question, type="stream")
-            await websocket.send_json(q_resp.dict(by_alias=True))
 
-            response = await chat_chain.arun(question)
-
-            ai_resp = ChatResponse(sender="bot", message=response, type="start")
-            await websocket.send_json(ai_resp.dict(by_alias=True))
-
-            end_resp = ChatResponse(sender="bot", message=response, type="end")
-            await websocket.send_json(end_resp.dict(by_alias=True))
-        except WebSocketDisconnect:
-            break
-        except Exception:
-            resp = ChatResponse(
-                sender="bot",
-                message="Sorry, something went wrong. Try again.",
-                type="error",
-            )
-            await websocket.send_json(resp.dict())
+app = Litestar(
+    route_handlers=[index, general_chat],
+    template_config=TemplateConfig(
+        directory=Path("html"),
+        engine=JinjaTemplateEngine,
+    ),
+    cors_config=CORSConfig(allow_origins=["*"]),
+)

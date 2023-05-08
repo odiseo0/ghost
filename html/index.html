@@ -51,9 +51,9 @@
         }
     </style>
     <script>
-        var endpoint = "wss://0.0.0.0:8000/chat";
+        var endpoint = "ws://127.0.0.1:8000/chat";
         var ws = new WebSocket(endpoint);
-        // Receive message from server word by word. Display the words as they are received.
+
         ws.onmessage = function (event) {
             var messages = document.getElementById('messages');
             var data = JSON.parse(event.data);
@@ -64,6 +64,7 @@
                     var div = document.createElement('div');
                     div.className = 'server-message';
                     var p = document.createElement('p');
+                    p.style.whiteSpace = "pre";
                     p.innerHTML = "<strong>" + "GPT3: " + "</strong>";
                     p.innerHTML += data.message;
                     div.appendChild(p);
@@ -99,15 +100,16 @@
                 var div = document.createElement('div');
                 div.className = 'client-message';
                 var p = document.createElement('p');
+                p.style.whiteSpace = "pre";
                 p.innerHTML = "<strong>" + "Tú: " + "</strong>";
                 p.innerHTML += data.message;
                 div.appendChild(p);
                 messages.appendChild(div);
             }
-            // Scroll to the bottom of the chat
+
             messages.scrollTop = messages.scrollHeight;
         };
-        // Send message to server
+
         function sendMessage(event) {
             event.preventDefault();
             var message = document.getElementById('messageText').value;
@@ -117,7 +119,6 @@
             ws.send(message);
             document.getElementById('messageText').value = "";
 
-            // Turn the button into a loading button
             var button = document.getElementById('send');
             button.innerHTML = "Cargando...";
             button.disabled = true;
