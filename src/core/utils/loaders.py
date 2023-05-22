@@ -1,3 +1,4 @@
+import aiofiles
 from langchain.docstore.document import Document
 from langchain.document_loaders.base import BaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, TextSplitter
@@ -8,7 +9,7 @@ class PDFLoader(BaseLoader):
     """Custom PDF loader."""
 
     async def load(self) -> list[Document]:
-        async with open(self.file_path, "rb") as f:
+        async with aiofiles.open(self.file_path, "rb") as f:
             reader = PdfReader(f)
 
             return [
